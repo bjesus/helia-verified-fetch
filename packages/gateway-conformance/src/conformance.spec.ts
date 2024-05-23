@@ -237,8 +237,8 @@ const tests: TestConfig[] = [
     name: 'TestUnixFSDirectoryListing',
     run: ['TestUnixFSDirectoryListing'],
     skip: [
-      'TestUnixFSDirectoryListingOnSubdomainGateway',
-      'TestUnixFSDirectoryListing/.*TODO:_cleanup_Kubo-specifics'
+      'TestUnixFSDirectoryListingOnSubdomainGateway'
+      // 'TestUnixFSDirectoryListing/.*TODO:_cleanup_Kubo-specifics'
     ],
     successRate: 50
   },

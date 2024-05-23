@@ -362,7 +362,7 @@ export class VerifiedFetch {
             items.push(dirItem)
           }
           // gatewayURL is the URL of the server currently hosting the code running verified-fetch
-          const gatewayURL = 'http://localhost:3441'
+          const gatewayURL = resource
           const htmlResponse = dirIndexHtml(terminalElement, items, { gatewayURL, log })
           const response = okResponse(resource, htmlResponse)
           response.headers.set('content-type', 'text/html')

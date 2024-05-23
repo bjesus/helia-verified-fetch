@@ -53,24 +53,11 @@ function iconFromExt (name: string): string {
 
 function itemShortHashCell (item: DirectoryItem, dirData: DirectoryTemplateData): string {
   const href = dirData.globalData.dnsLink ? `https://inbrowser.dev/ipfs/${item.hash}` : `${dirData.globalData.gatewayURL}/ipfs/${item.hash}?filename=${item.name}`
-  // item.hash != null
-  //             ? ''
-  //             : `<a class="ipfs-hash" translate="no" href="${dirData.globalData.dnsLink
-  //                 ? `https://inbrowser.dev/ipfs/${item.hash}" target="_blank" rel="noreferrer noopener"`
-  //                 : `${dirData.globalData.gatewayURL}/ipfs/${item.hash}?filename=${item.name}"`}
-  //               >
-  //               ${item.shortHash}
-  //             </a>`
 
   return `<a class="ipfs-hash" translate="no" href="${href}">${item.shortHash}</a>`
 }
 
 function dirListingTitle (dirData: DirectoryTemplateData): string {
-  // {{ range .Breadcrumbs -}}
-  // /{{ if .Path }}<a href="{{ $root.GatewayURL }}{{ .Path | urlEscape }}">{{ .Name }}</a>{{ else }}{{ .Name }}{{ end }}
-  // {{- else }}
-  // {{ .Path }}
-  // {{ end }}
   if (dirData.path != null) {
     const href = `${dirData.globalData.gatewayURL}/${dirData.path}`
     return `Index of <a href="${href}">${dirData.name}</a>`
@@ -91,6 +78,12 @@ function getAllDirListingRows (dirData: DirectoryTemplateData): string {
     <div class="nowrap" title="Cumulative size of IPFS DAG (data + metadata)">${item.size}</div>`).join(' ')
 }
 
+function getItemPath (item: UnixFSEntry): string {
+  const itemPathParts = item.path.split('/')
+
+  return itemPathParts.pop() ?? item.path
+}
+
 /**
  * @todo: https://github.com/ipfs/boxo/blob/09b0013e1c3e09468009b02dfc9b2b9041199d5d/gateway/handler_unixfs_dir.go#L200-L208
  *
@@ -101,23 +94,16 @@ function getAllDirListingRows (dirData: DirectoryTemplateData): string {
 export const dirIndexHtml = (dir: UnixFSEntry, items: UnixFSEntry[], { gatewayURL, dnsLink, log }: DirIndexHtmlOptions): string => {
   log('loading directory html for %s', dir.path)
 
-  let removeCidFromPath = false
-  if (gatewayURL.includes(dir.cid.toString())) {
-    removeCidFromPath = true
-  }
   const dirData: DirectoryTemplateData = {
     globalData: {
       gatewayURL,
       dnsLink: dnsLink ?? false
-      // root: dir
     },
     listing: items.map((item) => {
       return {
         size: item.size.toString(),
         name: item.name,
-        // path: item.path.replace(dir.cid.toString(), ''),
-        // path: item.path,
-        path: removeCidFromPath ? item.path.replace(dir.cid.toString(), '') : item.path,
+        path: getItemPath(item),
         hash: item.cid.toString(),
         shortHash: item.cid.toString().slice(0, 8)
       } satisfies DirectoryItem
