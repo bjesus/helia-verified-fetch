@@ -373,7 +373,7 @@ export class VerifiedFetch {
 
         this.log('error loading path %c/%s', dirCid, rootFilePath, err)
 
-        return notSupportedResponse('Unable to find index.html for directory at given path. Support for directories with implicit root is not implemented')
+        return notSupportedResponse(`Unable to find index.html for directory at given path, and could not list directory contents: ${err.message}`)
       } finally {
         options?.onProgress?.(new CustomProgressEvent<CIDDetail>('verified-fetch:request:end', { cid: dirCid, path: rootFilePath }))
       }
