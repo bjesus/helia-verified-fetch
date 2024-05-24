@@ -353,7 +353,11 @@ describe('@helia/verified-fetch - gateway conformance', function () {
             ...((skip != null) ? ['-skip', `${skip.join('|')}`] : []),
             ...((run != null) ? ['-run', `${run.join('|')}`] : [])
           ]
-        ), { reject: false, cancelSignal: timeout != null ? AbortSignal.timeout(timeout) : undefined })
+        ), {
+          reject: false,
+          // fallback to cancel process if it hangs. Mocha timing out doesn't always kill execa execution of gateway-conformance
+          cancelSignal: timeout != null ? AbortSignal.timeout(timeout) : undefined
+        })
 
         log(stdout)
         log.error(stderr)
@@ -372,7 +376,11 @@ describe('@helia/verified-fetch - gateway conformance', function () {
       this.timeout(200000)
       const log = logger.forComponent('output:all')
 
-      const { stderr, stdout } = await execa(binaryPath, getConformanceTestArgs('all', [], []), { reject: false, cancelSignal: AbortSignal.timeout(200000) })
+      const { stderr, stdout } = await execa(binaryPath, getConformanceTestArgs('all', [], []), {
+        reject: false,
+        // fallback to cancel process if it hangs. Mocha timing out doesn't always kill execa execution of gateway-conformance
+        cancelSignal: AbortSignal.timeout(200000)
+      })
 
       log(stdout)
       log.error(stderr)
